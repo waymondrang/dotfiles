@@ -1,0 +1,38 @@
+// -*- mode: jsonc -*-
+{
+    "layer": "top", // Waybar at top layer
+    // "mode": "overlay",
+    "position": "top", // Waybar position (top|bottom|left|right)
+    "margin-bottom": -8,
+    // "height": 30, // Waybar height (to be removed for auto height)
+    // Choose the order of the modules
+    "modules-left": [
+        "hyprland/workspaces"
+    ],
+    "modules-right": [
+        "clock",
+        "wireplumber",
+        "backlight",
+        "battery"
+    ],
+    "clock": {
+        // "timezone": "America/New_York",
+        "format": "{:%R %A}",
+        "format-alt": "{:%R %F}",
+        "tooltip": true,                // disable tooltip
+        "tooltip-format": "{:%A %F}"
+    },
+    "wireplumber": {
+        "format": "{volume}% {icon}",
+        "format-muted": "\ueee8  {volume}%",
+        "format-icons": ["\uf027", "\uf028 "]
+    },
+    "backlight": {
+        "format": "{percent}% "
+    },
+    "battery": {
+        "format": "{capacity}% {icon}",
+        "format-icons": ["\udb80\udc83", "\udb80\udc7a", "\udb80\udc7b", "\udb80\udc7c", "\udb80\udc7d", "\udb80\udc7e", "\udb80\udc7f", "\udb80\udc80", "\udb80\udc81", "\udb80\udc82", "\udb80\udc79"],
+        "format-charging": "{capacity}% \udb80\udc84"
+    }
+}

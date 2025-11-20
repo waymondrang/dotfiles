@@ -1,0 +1,61 @@
+* {
+    font-family: monospace;
+    font-size: 12px;
+    color: #fff;
+    padding: 0px;
+}
+
+window#waybar {
+    background-color: transparent;
+}
+
+.modules-right,
+.modules-center,
+.modules-left {
+    margin: 8px 0px;
+}
+
+.modules-right {
+    margin-right: 12px;
+}
+
+.modules-left {
+    margin-left: 12px;
+}
+
+#clock,
+#wireplumber,
+#backlight {
+    margin-right: 8px;
+}
+
+#workspaces button {
+    padding: 0px;
+    border-radius: 0px;
+    transition: none;
+    color: #666666;
+    border: none;
+    outline: none;
+}
+
+#workspaces button:hover {
+    background: transparent;
+}
+
+#workspaces button.active {
+    color: #5e35b1;
+    font-weight: bold;
+}
+
+#clock,
+#wireplumber,
+#backlight,
+#battery {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 0px 8px;
+    border-radius: 4px;
+}
+
+#clock:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
