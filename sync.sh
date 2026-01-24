@@ -35,11 +35,6 @@ declare -A FILE_MAPPINGS=(
 	["$HOME/.config/hypr/hyprlock.conf"]="./hypr"
 
 	# nvim
-	["$HOME/.config/hypr/hypridle.conf"]="./hypr"
-	["$HOME/.config/hypr/hyprland.conf"]="./hypr"
-	["$HOME/.config/hypr/hyprlock.conf"]="./hypr"
-
-	# nvim
 	["$HOME/.config/nvim/init.lua"]="./nvim"
 	["$HOME/.config/nvim/lua/config"]="./nvim/config"
 	["$HOME/.config/nvim/lua/plugins"]="./nvim/plugins"
