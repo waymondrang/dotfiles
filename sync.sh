@@ -29,6 +29,11 @@ check_dependencies() {
 		print_error "jq is required but not installed!"
 		exit 1
 	fi
+
+	if [[ ! -e "$CONFIG_FILE" ]]; then
+		print_error "missing config.json expected at ${CONFIG_FILE}!"
+		exit 1
+	fi
 }
 
 # list all program names defined in config.json
