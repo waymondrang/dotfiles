@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# sync.sh - config file sync utility
+# author: raymond wang
+# description: safely links repository config files with local files
+# github: github.com/waymondrang/dotfiles
+
 # exit on error
 set -e
 
@@ -55,6 +60,7 @@ show_programs() {
 
 # safely backs up path by appending .bak
 backup_path() {
+	# target is guaranteed to exist
 	local target="$1"
 	local backup="${target}.bak"
 
@@ -63,14 +69,45 @@ backup_path() {
 		backup="${target}.bak.$(date +%s)"
 	fi
 
-	mv "$target" "$backup"
-	print_warning "backed up existing $(basename "$target") to $(basename "$backup")"
+	# --dereference: always follow symbolic links in SOURCE
+	if cp --recursive --dereference "$target" "$backup"; then
+		# remove original target
+		rm -rf "$target"
+
+		print_info "backed up: existing $(basename "$target") -> $(basename "$backup")"
+	else
+		print_error "failed to back up $(basename "$target")"
+		exit 1
+	fi
+}
+
+# copies the destination path to source path
+copy_dest_to_src() {
+	local src="$1"  	# path to repo file/dir
+	local dest="$2"		# config locatiosns
+	local prog="$3" 	# program name
+
+	if [[ ! -d "$src" ]]; then
+		print_info "creating source directory: $(dirname "$src")"
+		mkdir -p "$(dirname "$src")"
+	fi
+
+	# copy destination files to source
+	if cp -r "$dest" "$src"; then
+		print_info "copied: $dest -> $src"
+	else
+		print_error "failed to copy $dest to $src"
+		return 1
+	fi
+
+	print_info "successfully copied destination to source"
 }
 
 # backup and create symlink from src to dest
 link_path() {
 	local src="$1"  # path to repo file/dir
 	local dest="$2" # config location
+	local prog="$3"
 
 	# replace $HOME string with actual value
 	dest="${dest/\$HOME/$HOME}"
@@ -82,20 +119,27 @@ link_path() {
 
 	# -e checks if file exists
 	if [[ ! -e "$src" ]]; then
-		print_warning "source does not exist, skipping: $src"
-		return
+		if [[ -e "$dest" ]]; then
+			print_info "destination exists but source does not, copying destination to source"
+			copy_dest_to_src "$src" "$dest" "$prog"
+			# continue to backup and link destination
+		else
+			print_error "destination does not exist: $dest"
+			return
+		fi
 	fi
 
 	# ensure parent directory exists
 	mkdir -p "$(dirname "$dest")"
 
 	# back up anything already at the destination (unless identical symlink)
+	# -L checks if file exists and is symbolic link
 	if [[ -L "$dest" ]]; then
 		local current_target
 		current_target="$(readlink "$dest")"
 
 		if [[ "$current_target" == "$src" ]]; then
-			print_info "identical symlink: $dest"
+			print_info "identical symlink: $dest -> $src"
 			return
 		fi
 
@@ -105,35 +149,35 @@ link_path() {
 	fi
 
 	ln -s "$src" "$dest"
-	print_success "linked: $dest -> $src"
+	print_info "linked: $dest -> $src"
 }
 
 # iterate over mappings and create symlinks
 sync_program() {
-	local program="$1"
+	local prog="$1"
 
-	if ! program_exists "$program"; then
-		print_error "unknown program: $program"
+	if ! program_exists "$prog"; then
+		print_error "unknown program: $prog"
 		print_info "run \"$0 --show-programs\" to see available programs"
 		exit 1
 	fi
 
-	print_step "syncing $program"
+	print_step "syncing $prog"
 
 	local length
-	length=$(jq --arg program "$program" '.[$program] | length' "$CONFIG_FILE")
+	length=$(jq --arg prog "$prog" '.[$prog] | length' "$CONFIG_FILE")
 
 	for ((i = 0; i < length; i++)); do
 		local dest
 		local src
 
-		dest=$(jq -r --arg program "$program" --argjson i "$i" '.[$program][$i] | keys[0]' "$CONFIG_FILE")
-		src=$(jq -r --arg program "$program" --argjson i "$i" '.[$program][$i] | .[keys[0]]' "$CONFIG_FILE")
+		dest=$(jq -r --arg prog "$prog" --argjson i "$i" '.[$prog][$i] | keys[0]' "$CONFIG_FILE")
+		src=$(jq -r --arg prog "$prog" --argjson i "$i" '.[$prog][$i] | .[keys[0]]' "$CONFIG_FILE")
 
-		link_path "$src" "$dest"
+		link_path "$src" "$dest" "$prog"
 	done
 
-	print_success "$program synced!"
+	print_success "$prog synced!"
 }
 
 print_usage() {
@@ -167,15 +211,15 @@ main() {
 	--all)
 		# sync every program in config.json
 		programs=$(get_programs)
-		for program in $programs; do
-			sync_program "$program"
+		for prog in $programs; do
+			sync_program "$prog"
 		done
 		;;
 
 	*)
 		# treat all positional arguments as program names
-		for program in "$@"; do
-			sync_program "$program"
+		for prog in "$@"; do
+			sync_program "$prog"
 		done
 		;;
 	esac
