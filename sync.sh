@@ -124,7 +124,7 @@ link_path() {
 			copy_dest_to_src "$src" "$dest" "$prog"
 			# continue to backup and link destination
 		else
-			print_error "destination does not exist: $dest"
+			print_error "neither destination nor source exist!"
 			return
 		fi
 	fi
