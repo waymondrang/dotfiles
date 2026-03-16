@@ -59,7 +59,7 @@ show_programs() {
 }
 
 # safely backs up path by appending .bak
-backup_path() {
+backup_and_remove_path() {
 	# target is guaranteed to exist
 	local target="$1"
 	local backup="${target}.bak"
@@ -117,6 +117,15 @@ link_path() {
 		src="$SCRIPT_DIR/$src"
 	fi
 
+	# sanity check dest; could exist but is bad symlink
+	if [[ -L "$dest" && ! -e "$dest" ]]; then
+		print_warning "bad symbolic link: $dest -> $(readlink $dest)"
+		
+		# remove bad symlink
+		print_info "removing $dest"
+		rm -rf "$dest"
+	fi
+
 	# -e checks if file exists
 	if [[ ! -e "$src" ]]; then
 		if [[ -e "$dest" ]]; then
@@ -125,7 +134,7 @@ link_path() {
 			# continue to backup and link destination
 		else
 			print_error "neither destination nor source exist!"
-			return
+			return 1
 		fi
 	fi
 
@@ -140,12 +149,12 @@ link_path() {
 
 		if [[ "$current_target" == "$src" ]]; then
 			print_info "identical symlink: $dest -> $src"
-			return
+			return 0
 		fi
 
-		backup_path "$dest"
+		backup_and_remove_path "$dest"
 	elif [[ -e "$dest" ]]; then
-		backup_path "$dest"
+		backup_and_remove_path "$dest"
 	fi
 
 	ln -s "$src" "$dest"
@@ -164,20 +173,29 @@ sync_program() {
 
 	print_step "syncing $prog"
 
+	local success=0
+
 	local length
 	length=$(jq --arg prog "$prog" '.[$prog] | length' "$CONFIG_FILE")
 
 	for ((i = 0; i < length; i++)); do
-		local dest
-		local src
+		# dest_raw and src_raw are processed in link_path
+		local dest_raw
+		local src_raw
 
-		dest=$(jq -r --arg prog "$prog" --argjson i "$i" '.[$prog][$i] | keys[0]' "$CONFIG_FILE")
-		src=$(jq -r --arg prog "$prog" --argjson i "$i" '.[$prog][$i] | .[keys[0]]' "$CONFIG_FILE")
+		dest_raw=$(jq -r --arg prog "$prog" --argjson i "$i" '.[$prog][$i] | keys[0]' "$CONFIG_FILE")
+		src_raw=$(jq -r --arg prog "$prog" --argjson i "$i" '.[$prog][$i] | .[keys[0]]' "$CONFIG_FILE")
 
-		link_path "$src" "$dest" "$prog"
+		if ! link_path "$src_raw" "$dest_raw" "$prog"; then
+			success=1
+		fi
 	done
 
-	print_success "$prog synced!"
+	if [[ "$success" -eq 0 ]]; then
+		print_success "$prog synced!"
+	else
+		print_error "failed to sync $prog"
+	fi
 }
 
 print_usage() {
