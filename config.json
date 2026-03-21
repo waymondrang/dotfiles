@@ -1,18 +1,18 @@
 {
-  "dunst": [{ "$HOME/.config/dunst": "dunst" }],
-  "fontconfig": [{ "$HOME/.config/fontconfig": "fontconfig" }],
-  "foot": [{ "$HOME/.config/foot": "foot" }],
-  "hypr": [
-    { "$HOME/.config/hypr/hypridle.conf": "hypr/hypridle.conf" },
-    { "$HOME/.config/hypr/hyprland.conf": "hypr/hyprland.conf" },
-    { "$HOME/.config/hypr/hyprlock.conf": "hypr/hyprlock.conf" }
-  ],
-  "nvim": [
-    { "$HOME/.config/nvim/init.lua": "nvim/init.lua" },
-    { "$HOME/.config/nvim/lua/config": "nvim/config" },
-    { "$HOME/.config/nvim/lua/plugins": "nvim/plugins" }
-  ],
-  "tmux": [{ "$HOME/.tmux.conf": "tmux/.tmux.conf" }],
-  "tofi": [{ "$HOME/.config/tofi": "tofi" }],
-  "waybar": [{ "$HOME/.config/waybar": "waybar" }]
+    "dunst": [{ "$HOME/.config/dunst": "dunst" }],
+    "fontconfig": [{ "$HOME/.config/fontconfig": "fontconfig" }],
+    "foot": [{ "$HOME/.config/foot": "foot" }],
+    "hypr": [
+        { "$HOME/.config/hypr/hypridle.conf": "hypr/hypridle.conf" },
+        { "$HOME/.config/hypr/hyprland.conf": "hypr/hyprland.conf" },
+        { "$HOME/.config/hypr/hyprlock.conf": "hypr/hyprlock.conf" }
+    ],
+    "nvim": [
+        { "$HOME/.config/nvim/init.lua": "nvim/init.lua" },
+        { "$HOME/.config/nvim/lua/config": "nvim/config" },
+        { "$HOME/.config/nvim/lua/plugins": "nvim/plugins" }
+    ],
+    "tmux": [{ "$HOME/.tmux.conf": "tmux/.tmux.conf" }],
+    "tofi": [{ "$HOME/.config/tofi": "tofi" }],
+    "waybar": [{ "$HOME/.config/waybar": "waybar" }]
 }
