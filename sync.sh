@@ -222,6 +222,11 @@ main() {
 		show_programs
 		;;
 
+        # add alias for --show-programs
+        --list-programs)
+                show_programs
+                ;;
+
 	--help | -h)
 		print_usage
 		;;
