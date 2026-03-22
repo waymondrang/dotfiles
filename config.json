@@ -14,5 +14,7 @@
     ],
     "tmux": [{ "$HOME/.tmux.conf": "tmux/.tmux.conf" }],
     "tofi": [{ "$HOME/.config/tofi": "tofi" }],
-    "waybar": [{ "$HOME/.config/waybar": "waybar" }]
+    "waybar": [{ "$HOME/.config/waybar": "waybar" }],
+    "sway": [{ "$HOME/.config/sway": "sway" }],
+    "prettier": [{ "$HOME/.prettierrc": "prettier/.prettierrc" }]
 }
